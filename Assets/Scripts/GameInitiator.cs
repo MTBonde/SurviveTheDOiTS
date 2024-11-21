@@ -76,8 +76,7 @@ public class GameInitiator : MonoBehaviour
     {
         Debug.Log("Creating essential entities and loading subscenes...");
     
-        // Assume you have a reference to the subscene that holds the third-person player prefab.
-        // Replace `PlayerSubscene` with the actual subscene reference.
+        
         var playerSubscene = FindObjectOfType<SubScene>();
         if (playerSubscene == null)
         {

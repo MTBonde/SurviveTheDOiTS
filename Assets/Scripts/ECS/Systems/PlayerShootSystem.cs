@@ -21,7 +21,6 @@ namespace ECS.Systems
         {
             // get the entities reference
             EntitiesReference entitiesReference = SystemAPI.GetSingleton<EntitiesReference>();
-            //Entity playerEntity = SystemAPI.GetSingletonEntity<FirstPersonPlayer>();
             
             foreach ((
                          RefRW<FirstPersonPlayer> firstPersonPlayer, 
@@ -48,15 +47,36 @@ namespace ECS.Systems
                     // Instantiate a bullet entity
                     Entity bulletEntity = state.EntityManager.Instantiate(entitiesReference.BulletPrefabEntity);
                     Debug.Log($"Bullet instantiated: {bulletEntity}");
+
+                    // Get the local transform of the player entity
+                    LocalTransform playerEntityLocalTransform = SystemAPI.GetComponent<LocalTransform>(firstPersonPlayer.ValueRO.ControlledCharacter);
                     
-                    // // Get the local transform of the player entity
-                    // LocalTransform playerEntityLocalTransform = SystemAPI.GetComponent<LocalTransform>(firstPersonPlayer.ValueRO.ControlledCharacter);
-                    //
-                    // // Calculate the bullet spawn world position
-                    // float3 bulletSpawnWorldPosition = playerEntityLocalTransform.TransformPoint(shootAttack.ValueRO.bulletSpawnLocalPosition);
-                    //
-                    // // Set the bullet entity's local transform to the bullet spawn world position
-                    // SystemAPI.SetComponent(bulletEntity, LocalTransform.FromPosition(bulletSpawnWorldPosition));
+                    // Calculate the bullet spawn world position
+                    float3 bulletSpawnWorldPosition = playerEntityLocalTransform.TransformPoint(shootAttack.ValueRO.bulletSpawnLocalPosition);
+                    
+                    // Set the bullet entity's local transform to the bullet spawn world position
+                    SystemAPI.SetComponent(bulletEntity, LocalTransform.FromPosition(bulletSpawnWorldPosition));
+                    
+                    quaternion characterRotation = SystemAPI.GetComponent<LocalTransform>(firstPersonPlayer.ValueRO.ControlledCharacter).Rotation;
+                    quaternion localCharacterViewRotation = SystemAPI.GetComponent<FirstPersonCharacterComponent>(firstPersonPlayer.ValueRO.ControlledCharacter).ViewLocalRotation;
+                    
+                    // Compute world view direction
+
+                    FirstPersonCharacterUtilities.GetCurrentWorldViewDirectionAndRotation(
+                        characterRotation,
+                        localCharacterViewRotation,
+                        out var worldCharacterViewDirection,
+                        out _
+                    );
+                    
+                    // Use the forward direction as bulletDirection
+                    float3 bulletDirection = worldCharacterViewDirection;
+                    
+                    // Set the bullet entity's direction component
+                    SystemAPI.SetComponent(bulletEntity, new DirectionComponent
+                    {
+                        Direction = bulletDirection
+                    });
                 }
             }
         }
