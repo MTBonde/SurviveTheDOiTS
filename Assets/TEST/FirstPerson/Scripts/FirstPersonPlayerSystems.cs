@@ -28,12 +28,15 @@ public partial class FirstPersonPlayerInputsSystem : SystemBase
                 y = (Input.GetKey(KeyCode.W) ? 1f : 0f) + (Input.GetKey(KeyCode.S) ? -1f : 0f),
             };
             
-            playerInputs.ValueRW.LookInput = new float2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * player.mouseSensitivity;
+            playerInputs.ValueRW.LookInput = new float2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * player.MouseSensitivity;
             
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 playerInputs.ValueRW.JumpPressed.Set(tick);
             }
+            
+            // Capture left mouse button hold
+            playerInputs.ValueRW.IsShootInputPressed = Input.GetMouseButton(0);
         }
     }
 }

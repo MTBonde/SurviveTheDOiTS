@@ -1,3 +1,4 @@
+using ECS.Components;
 using UnityEngine;
 using Unity.Entities;
 
@@ -5,7 +6,8 @@ using Unity.Entities;
 public class FirstPersonPlayerAuthoring : MonoBehaviour
 {
     public GameObject ControlledCharacter;
-    public float mouseSensitivity = 1.0f; 
+    public float MouseSensitivity = 1.0f;
+    public float FireRate = 0.1f;
 
     public class Baker : Baker<FirstPersonPlayerAuthoring>
     {
@@ -15,9 +17,11 @@ public class FirstPersonPlayerAuthoring : MonoBehaviour
             AddComponent(entity, new FirstPersonPlayer
             {
                 ControlledCharacter = GetEntity(authoring.ControlledCharacter, TransformUsageFlags.Dynamic),
-                mouseSensitivity = authoring.mouseSensitivity,
+                MouseSensitivity = authoring.MouseSensitivity,
+                FireRate = authoring.FireRate
             });
             AddComponent<FirstPersonPlayerInputs>(entity);
+            AddComponent<ShootAttack>(entity);
         }
     }
 }

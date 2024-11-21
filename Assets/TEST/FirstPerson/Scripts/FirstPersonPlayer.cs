@@ -7,7 +7,8 @@ using Unity.Mathematics;
 public struct FirstPersonPlayer : IComponentData
 {
     public Entity ControlledCharacter;
-    public float mouseSensitivity;
+    public float MouseSensitivity;
+    public float FireRate;
 }
 
 [Serializable]
@@ -16,4 +17,5 @@ public struct FirstPersonPlayerInputs : IComponentData
     public float2 MoveInput;
     public float2 LookInput;
     public FixedInputEvent JumpPressed;
+    public bool IsShootInputPressed;
 }
