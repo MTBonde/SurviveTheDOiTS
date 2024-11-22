@@ -6,28 +6,25 @@ namespace ECS.Components
     public class EntitiesReferenceAuthoring : MonoBehaviour
     {
         public GameObject BulletPrefabGameObject;
-        public GameObject ZombiePrefabGameObject;
-        public GameObject SoldierPrefabGameObject;
+        public GameObject BoidPrefabGameObject;
 
         public class Baker : Baker<EntitiesReferenceAuthoring>
         {
             public override void Bake(EntitiesReferenceAuthoring authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-                AddComponent(entity, new EntitiesReference
+                AddComponent(entity, new EntitiesReferences
                 {
                     BulletPrefabEntity = GetEntity(authoring.BulletPrefabGameObject, TransformUsageFlags.Dynamic),
-                    ZombiePrefabEntity = GetEntity(authoring.ZombiePrefabGameObject, TransformUsageFlags.Dynamic),
-                    SoldierPrefabEntity = GetEntity(authoring.SoldierPrefabGameObject, TransformUsageFlags.Dynamic)
+                    BoidPrefabEntity = GetEntity(authoring.BoidPrefabGameObject, TransformUsageFlags.Dynamic)
                 });
             }
         }
     }
     
-    public struct EntitiesReference : IComponentData
+    public struct EntitiesReferences : IComponentData
     {
         public Entity BulletPrefabEntity;
-        public Entity ZombiePrefabEntity;
-        public Entity SoldierPrefabEntity;
+        public Entity BoidPrefabEntity;
     }
 }

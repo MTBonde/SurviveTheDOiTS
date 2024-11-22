@@ -2,6 +2,7 @@ using ECS.Components;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 
 namespace ECS.Systems
@@ -12,19 +13,20 @@ namespace ECS.Systems
         public void OnUpdate(ref SystemState state)
         {
             foreach ((
-                         RefRW<MoveSpeedComponent> moveSpeedComponent, 
-                         RefRW<DirectionComponent> directionComponent,
-                         RefRW<LocalTransform> localTransform
+                         RefRW<PhysicsVelocity> physicsVelocity,
+                         RefRO<MoveSpeedComponent> moveSpeedComponent, 
+                         RefRO<DirectionComponent> directionComponent
                      ) in SystemAPI.Query<
-                         RefRW<MoveSpeedComponent>, 
-                         RefRW<DirectionComponent>,
-                         RefRW<LocalTransform>
+                         RefRW<PhysicsVelocity>,
+                         RefRO<MoveSpeedComponent>, 
+                         RefRO<DirectionComponent>
                      >())
             {
-                float3 direction = math.normalize(directionComponent.ValueRW.Direction);
-                float moveSpeed = moveSpeedComponent.ValueRW.Speed;
+                float3 direction = math.normalize(directionComponent.ValueRO.Direction);
+                float moveSpeed = moveSpeedComponent.ValueRO.Speed;
                 
-                localTransform.ValueRW.Position += direction * moveSpeed * SystemAPI.Time.DeltaTime;
+                physicsVelocity.ValueRW.Linear = moveSpeed * direction;
+                //localTransform.ValueRW.Position += direction * moveSpeed * SystemAPI.Time.DeltaTime;
             }
         }
     }

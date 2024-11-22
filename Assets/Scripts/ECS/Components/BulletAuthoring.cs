@@ -14,9 +14,10 @@ namespace ECS.Components
             public override void Bake(BulletAuthoring authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-                AddComponent(entity, new Bullet
+                AddComponent(entity, new BulletComponent
                 {
                     DamageAmount = authoring.DamageAmount,
+                    BulletSize = 0.1f
                 });
                 AddComponent(entity, new MoveSpeedComponent
                 {
@@ -30,8 +31,9 @@ namespace ECS.Components
         }
     }
     
-    public struct Bullet : IComponentData
+    public struct BulletComponent : IComponentData
     {
         public int DamageAmount;
+        public float BulletSize;
     }
 }

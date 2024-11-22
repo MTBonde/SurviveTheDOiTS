@@ -16,7 +16,7 @@ namespace ECS.Components
             public override void Bake(ShootAttackAuthoring authoring)
             {
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-                AddComponent(entity, new ShootAttack
+                AddComponent(entity, new ShootAttackComponent
                 {
                     timerMAX = authoring.timerMAX,
                     damageAmount = authoring.damageAmount,
@@ -27,7 +27,7 @@ namespace ECS.Components
         }
     }
     
-    public struct ShootAttack : IComponentData
+    public struct ShootAttackComponent : IComponentData
     {
         public float timer;
         public float timerMAX;

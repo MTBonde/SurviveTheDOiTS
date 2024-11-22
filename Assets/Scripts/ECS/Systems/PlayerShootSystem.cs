@@ -13,40 +13,37 @@ namespace ECS.Systems
     {
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<EntitiesReference>();
+            state.RequireForUpdate<EntitiesReferences>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             // get the entities reference
-            EntitiesReference entitiesReference = SystemAPI.GetSingleton<EntitiesReference>();
+            EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
             
             foreach ((
-                         RefRW<FirstPersonPlayer> firstPersonPlayer, 
                          RefRW<FirstPersonPlayerInputs> playerInputs,
-                         RefRW<ShootAttack> shootAttack
+                         RefRW<ShootAttackComponent> shootAttack,
+                         RefRO<FirstPersonPlayer> firstPersonPlayer 
                      )in SystemAPI.Query<
-                         RefRW<FirstPersonPlayer>, 
                          RefRW<FirstPersonPlayerInputs>,
-                         RefRW<ShootAttack>
+                         RefRW<ShootAttackComponent>,
+                         RefRO<FirstPersonPlayer> 
                      >())
             {
-                // // EO; If the timer is greater than 0, decrement the timer by the delta time
-                // shootAttack.ValueRW.timer -= SystemAPI.Time.DeltaTime;
-                // if (shootAttack.ValueRO.timer > 0)
-                // {
-                //     continue;
-                // }
-                // shootAttack.ValueRW.timer = shootAttack.ValueRO.timerMAX;
+                // EO; If the timer is greater than 0, decrement the timer by the delta time
+                shootAttack.ValueRW.timer -= SystemAPI.Time.DeltaTime;
+                if (shootAttack.ValueRO.timer >= 0)
+                {
+                    continue;
+                }
                 
-                //if (playerInputs.ValueRO.IsShootInputPressed && firstPersonPlayer.ValueRW.FireRate <= 0)
                 if (playerInputs.ValueRO.IsShootInputPressed)
                 {
-                    Debug.Log("Shoot");
-                    // Instantiate a bullet entity
-                    Entity bulletEntity = state.EntityManager.Instantiate(entitiesReference.BulletPrefabEntity);
-                    Debug.Log($"Bullet instantiated: {bulletEntity}");
+                    //Debug.Log("Shoot");
+                    shootAttack.ValueRW.timer = shootAttack.ValueRO.timerMAX;
+                    
 
                     // Get the local transform of the player entity
                     LocalTransform playerEntityLocalTransform = SystemAPI.GetComponent<LocalTransform>(firstPersonPlayer.ValueRO.ControlledCharacter);
@@ -54,14 +51,11 @@ namespace ECS.Systems
                     // Calculate the bullet spawn world position
                     float3 bulletSpawnWorldPosition = playerEntityLocalTransform.TransformPoint(shootAttack.ValueRO.bulletSpawnLocalPosition);
                     
-                    // Set the bullet entity's local transform to the bullet spawn world position
-                    SystemAPI.SetComponent(bulletEntity, LocalTransform.FromPosition(bulletSpawnWorldPosition));
-                    
+                    // Get the character rotation and local view rotation
                     quaternion characterRotation = SystemAPI.GetComponent<LocalTransform>(firstPersonPlayer.ValueRO.ControlledCharacter).Rotation;
                     quaternion localCharacterViewRotation = SystemAPI.GetComponent<FirstPersonCharacterComponent>(firstPersonPlayer.ValueRO.ControlledCharacter).ViewLocalRotation;
                     
-                    // Compute world view direction
-
+                    // Get the world view direction
                     FirstPersonCharacterUtilities.GetCurrentWorldViewDirectionAndRotation(
                         characterRotation,
                         localCharacterViewRotation,
@@ -69,8 +63,14 @@ namespace ECS.Systems
                         out _
                     );
                     
-                    // Use the forward direction as bulletDirection
+                    // Set the bullet direction to the world view direction
                     float3 bulletDirection = worldCharacterViewDirection;
+                    
+                    // Instantiate a bullet entity
+                    Entity bulletEntity = state.EntityManager.Instantiate(entitiesReferences.BulletPrefabEntity);
+                    
+                    // Set the bullet entity's local transform to the bullet spawn world position
+                    SystemAPI.SetComponent(bulletEntity, LocalTransform.FromPosition(bulletSpawnWorldPosition));
                     
                     // Set the bullet entity's direction component
                     SystemAPI.SetComponent(bulletEntity, new DirectionComponent
