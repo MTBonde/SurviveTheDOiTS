@@ -20,6 +20,7 @@ public class FirstPersonPlayerAuthoring : MonoBehaviour
                 MouseSensitivity = authoring.MouseSensitivity,
             });
             AddComponent<FirstPersonPlayerInputs>(entity);
+            AddComponent<KilledBoidsCounter>(entity);
         }
     }
 }

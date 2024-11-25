@@ -7,6 +7,7 @@ namespace ECS.Components
         public float AlignmentWeight;
         public float CohesionWeight;
         public float SeparationWeight;
+        public BoidState State;
         
         // saved for later
         // public float NeighborRadius;
@@ -18,5 +19,11 @@ namespace ECS.Components
         // public float MaxMoveSpeed;
         // public float RotationSpeed;
         // public float MaxSteerForce;
+    }
+    
+    public enum BoidState
+    {
+        Flocking,
+        Attacking
     }
 }

@@ -47,8 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9326bc29aa3ce0747bdfaf111886ca63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BulletSpeed: 50
+  BulletSpeed: 100
   DamageAmount: 1
+  RemainingLifetime: 2
 --- !u!135 &6232029481285681357
 SphereCollider:
   m_ObjectHideFlags: 0

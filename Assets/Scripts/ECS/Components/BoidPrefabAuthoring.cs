@@ -37,6 +37,12 @@ namespace ECS.Components
                 AddComponent(entity, new VelocityComponent { Velocity = prefabAuthoring.Direction * prefabAuthoring.Speed });
                 AddComponent(entity, new BoidBehaviourComponent {});
                 AddComponent(entity, new BoidTag {});
+                AddComponent(entity, new BoidAttackComponent
+                {
+                    IsAttacking = false
+                });
+                
+                SetComponentEnabled<BoidAttackComponent>(false);
                 
                 // // Adds MoveSpeedComponent to the entity with the speed value from BoidAuthoring.
                 // AddComponent(entity, new MoveSpeedComponent { Speed = prefabAuthoring.Speed });

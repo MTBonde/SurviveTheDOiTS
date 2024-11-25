@@ -37,12 +37,12 @@ namespace ECS.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            bool nomore = false;
-            
-            if (nomore)
-            {
-                return;
-            }
+            // bool nomore = false;
+            //
+            // if (nomore)
+            // {
+            //     return;
+            // }
             // Retrieve references for boid prefab and spawner settings
             EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
             Random random = new Random((uint)UnityEngine.Random.Range(1, int.MaxValue));
@@ -75,7 +75,7 @@ namespace ECS.Systems
                     CurrentBoidCount++;
                 }
                 
-                nomore = true;
+                //nomore = true;
             }
 
             // OLD CODE

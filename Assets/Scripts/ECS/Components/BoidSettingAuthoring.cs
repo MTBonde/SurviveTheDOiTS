@@ -17,6 +17,8 @@ namespace ECS.Authoring
         public float AlignmentWeight = 1f;
         public float CohesionWeight = 1f;
         public float SeparationWeight = 1f;
+        public float AttackRange = 10f;
+        public float GroundOffset = 2f;
         
         // Boundary settings
         public GameObject BoundaryCenter;
@@ -48,6 +50,8 @@ namespace ECS.Authoring
                 boidSettings.CohesionWeight = CohesionWeight;
                 boidSettings.SeparationWeight = SeparationWeight;
                 boidSettings.BoundaryCenter = BoundaryCenter.transform.position;
+                boidSettings.AttackRange = AttackRange;
+                boidSettings.GroundOffset = GroundOffset;
                 boidSettings.BoundarySize = BoundarySize;
                 boidSettings.BoundaryWeight = BoundaryWeight;
                 entityManager.SetComponentData(boidSettingsEntity, boidSettings);
@@ -66,6 +70,8 @@ namespace ECS.Authoring
                     AlignmentWeight = authoring.AlignmentWeight,
                     CohesionWeight = authoring.CohesionWeight,
                     SeparationWeight = authoring.SeparationWeight,
+                    AttackRange = authoring.AttackRange,
+                    GroundOffset = authoring.GroundOffset,
                     BoundaryCenter = authoring.BoundaryCenter.transform.position,
                     BoundarySize = authoring.BoundarySize,
                     BoundaryWeight = authoring.BoundaryWeight,
@@ -84,6 +90,8 @@ namespace ECS.Authoring
         public float AlignmentWeight;
         public float CohesionWeight;
         public float SeparationWeight;
+        public float AttackRange;
+        public float GroundOffset;
         
         // Boundary parameters
         public float3 BoundaryCenter;

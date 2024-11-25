@@ -8,6 +8,8 @@ namespace ECS.Components
     {
         public float BulletSpeed;
         public int DamageAmount;
+        public float RemainingLifetime;
+
         
         public class Baker : Baker<BulletAuthoring>
         {
@@ -17,7 +19,7 @@ namespace ECS.Components
                 AddComponent(entity, new BulletComponent
                 {
                     DamageAmount = authoring.DamageAmount,
-                    BulletSize = 0.1f
+                    BulletSize = 0.1f,
                 });
                 AddComponent(entity, new MoveSpeedComponent
                 {
@@ -27,6 +29,10 @@ namespace ECS.Components
                 {
                     Direction = new float3(0, 0, 1)
                 });
+                AddComponent(entity, new LifetimeComponent
+                {
+                    RemainingLifetime = authoring.RemainingLifetime
+                });
             }
         }
     }
@@ -35,5 +41,10 @@ namespace ECS.Components
     {
         public int DamageAmount;
         public float BulletSize;
+    }
+    
+    public struct LifetimeComponent : IComponentData
+    {
+        public float RemainingLifetime;
     }
 }

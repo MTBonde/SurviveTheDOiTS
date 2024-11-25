@@ -26,6 +26,8 @@ namespace ECS.Systems
     [BurstCompile]
     public partial struct BoidBehaviorSystem : ISystem
     {
+        public void OnCreate(ref SystemState state) { state.RequireForUpdate<BoidSettings>(); }
+
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
@@ -37,6 +39,7 @@ namespace ECS.Systems
             // Get boid query
             var boidQuery = SystemAPI.QueryBuilder()
                 .WithAll<BoidTag, LocalTransform, VelocityComponent>()
+                .WithDisabled<BoidAttackComponent>()
                 .Build();
 
             // Get boid count

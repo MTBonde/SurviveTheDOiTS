@@ -182,6 +182,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 473499487}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1555240849038293811, guid: e95be3f6ef9cc8243994bdcda968a0e5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 456210666}
     - targetCorrespondingSourceObject: {fileID: 3463604651959167738, guid: e95be3f6ef9cc8243994bdcda968a0e5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 452708906}
@@ -213,6 +216,19 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1555240849038293810, guid: e95be3f6ef9cc8243994bdcda968a0e5, type: 3}
   m_PrefabInstance: {fileID: 54707292}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &456210666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456210660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4aca3914f6f76ac4c8f8bcc6e9a81862, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HealthAmount: 100
 --- !u!1 &473499486
 GameObject:
   m_ObjectHideFlags: 0
@@ -1076,14 +1092,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fba977d76dd7904287d04a19c0c2415, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NeighborRadius: 25
-  MoveSpeed: 50
+  NeighborRadius: 10
+  MoveSpeed: 10
   AlignmentWeight: 1
-  CohesionWeight: 10
-  SeparationWeight: 0.1
+  CohesionWeight: 1
+  SeparationWeight: 1
+  AttackRange: 50
+  GroundOffset: 2
   BoundaryCenter: {fileID: 2138355733}
-  BoundarySize: 1
-  BoundaryWeight: 100
+  BoundarySize: 25
+  BoundaryWeight: 50
 --- !u!114 &1978585782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1096,7 +1114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d38c05077a1ebe4a9d3299254c9f0f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxBoidCount: 1
+  MaxBoidCount: 200
   SpawnPosition: {fileID: 917237930}
 --- !u!4 &1978585783
 Transform:

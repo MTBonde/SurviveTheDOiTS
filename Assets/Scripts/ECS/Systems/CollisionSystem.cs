@@ -76,11 +76,12 @@ namespace ECS.Systems
                     {
                         Debug.Log("Bullet hit boid");
                         
+                        // reduce health of boid
+                        RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(hit.Entity);
+                        targetHealth.ValueRW.HealthAmount -= bulletComponent.ValueRO.DamageAmount;
+                        
                         // Destroy the bullet entity
                         ecb.DestroyEntity(entity);
-                        
-                        // Disable the boid entity
-                        ecb.DestroyEntity(hit.Entity);
                     }
                 }
                 
