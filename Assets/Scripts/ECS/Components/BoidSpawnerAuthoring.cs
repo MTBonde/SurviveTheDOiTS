@@ -1,3 +1,5 @@
+using ECS.Components;
+using ECS.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -27,6 +29,14 @@ namespace ECS.Authoring
                 {
                     MaxBoidCount = authoring.MaxBoidCount,
                     SpawnPosition = authoring.SpawnPosition.transform.position
+                });
+                
+                AddComponent(entity, new WaveData
+                {
+                    CurrentWaveCount = 1,
+                    SpawnAmount = 2,
+                    MaxBoidCount = authoring.MaxBoidCount,
+                    WaveInterval = 5f
                 });
             }
         }
