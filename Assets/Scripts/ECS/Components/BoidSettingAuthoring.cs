@@ -12,18 +12,18 @@ namespace ECS.Authoring
     [DisallowMultipleComponent]
     public class BoidSettingsAuthoring : MonoBehaviour
     {
-        public float NeighborRadius = 5f;
-        public float MoveSpeed = 5f;
-        public float AlignmentWeight = 1f;
-        public float CohesionWeight = 1f;
-        public float SeparationWeight = 1f;
-        public float AttackRange = 10f;
-        public float GroundOffset = 2f;
+        public float NeighborRadius = 25f;
+        public float MoveSpeed = 25f;
+        public float AlignmentWeight = 10f;
+        public float CohesionWeight = 5f;
+        public float SeparationWeight = 0.5f;
+        public float AttackRange = 40f;
+        public float GroundOffset = 1.5f;
         
         // Boundary settings
         public GameObject BoundaryCenter;
-        public float BoundarySize = 50f; // Half the size of the area
-        public float BoundaryWeight = 10f; // Steering force when outside boundary
+        public float BoundarySize = 25f; // Half the size of the area
+        public float BoundaryWeight = 50f; // Steering force when outside boundary
 
         private Entity boidSettingsEntity;
         private EntityManager entityManager;
