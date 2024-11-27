@@ -7,7 +7,7 @@ namespace ECS.Systems
     {
         private float timeSinceLastWave;
         private int waveCount;
-        private const int MAX_WAVES = 10;
+        private const int MAX_WAVES = 20;
 
         public void OnCreate(ref SystemState state)
         {

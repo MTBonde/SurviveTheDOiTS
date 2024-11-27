@@ -15,6 +15,7 @@ namespace ECS.Systems
 
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<BoidSettings>();
             state.RequireForUpdate<WaveData>();
             state.RequireForUpdate<EntitiesReferences>();
             state.RequireForUpdate<BoidSpawner>();
@@ -28,6 +29,7 @@ namespace ECS.Systems
         {
             var waveData = SystemAPI.GetSingletonRW<WaveData>();
             var boidSpawner = SystemAPI.GetSingleton<BoidSpawner>();
+            var boidSettings = SystemAPI.GetSingleton<BoidSettings>();
             var entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
 
             // Update spawn timer
@@ -63,12 +65,14 @@ namespace ECS.Systems
 
                 Entity boidEntity = state.EntityManager.Instantiate(entitiesReferences.BoidPrefabEntity);
 
-                float3 randomVelocity = random.NextFloat3Direction() * random.NextFloat(1f, 3f);
-                state.EntityManager.SetComponentData(boidEntity, new VelocityComponent { Velocity = randomVelocity });
-
                 float3 randomOffset = random.NextFloat3(-10f, 10f);
                 float3 boidSpawnPosition = boidSpawner.SpawnPosition + randomOffset;
                 state.EntityManager.SetComponentData(boidEntity, LocalTransform.FromPosition(boidSpawnPosition));
+
+                var direction = (boidSettings.BoundaryCenter - boidSpawnPosition) + randomOffset;
+                
+                var targetVelocity = math.normalize(direction) * boidSettings.MoveSpeed;
+                state.EntityManager.SetComponentData(boidEntity, new VelocityComponent { Velocity = targetVelocity });
 
                 currentBoidCount++;
             }

@@ -529,7 +529,7 @@ Transform:
   m_GameObject: {fileID: 917237930}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 50, z: 100}
+  m_LocalPosition: {x: 0, y: 100, z: 100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -669,7 +669,7 @@ Transform:
   m_GameObject: {fileID: 1270034256}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 25}
+  m_LocalPosition: {x: 0, y: 50, z: 50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1302,16 +1302,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fba977d76dd7904287d04a19c0c2415, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NeighborRadius: 20
-  MoveSpeed: 20
+  NeighborRadius: 40
+  MoveSpeed: 25
   AlignmentWeight: 10
-  CohesionWeight: 5
-  SeparationWeight: 0.1
-  AttackRange: 50
+  CohesionWeight: 10
+  SeparationWeight: 1
+  AttackRange: 20
   GroundOffset: 1.5
   BoundaryCenter: {fileID: 2138355733}
-  BoundarySize: 25
-  BoundaryWeight: 100
+  BoundarySize: 80
+  BoundaryWeight: 20
 --- !u!114 &1978585782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1324,7 +1324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d38c05077a1ebe4a9d3299254c9f0f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxBoidCount: 256
+  MaxBoidCount: 4096
   SpawnPosition: {fileID: 917237930}
 --- !u!4 &1978585783
 Transform:
@@ -1535,7 +1535,7 @@ Transform:
   m_GameObject: {fileID: 2138355733}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 50, z: 50}
+  m_LocalPosition: {x: 0, y: 100, z: 100}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

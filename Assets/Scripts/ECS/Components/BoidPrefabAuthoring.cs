@@ -42,7 +42,7 @@ namespace ECS.Components
                     IsAttacking = false
                 });
                 
-                SetComponentEnabled<BoidAttackComponent>(false);
+                SetComponentEnabled<BoidAttackComponent>(entity, false);
                 
                 // // Adds MoveSpeedComponent to the entity with the speed value from BoidAuthoring.
                 // AddComponent(entity, new MoveSpeedComponent { Speed = prefabAuthoring.Speed });
