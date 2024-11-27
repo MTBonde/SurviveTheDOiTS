@@ -6,23 +6,22 @@ using Unity.Mathematics;
 namespace SpatialHashmap
 {
     [BurstCompile]
-    public struct QueryNeighborsJob : IJobParallelFor
+    public struct QueryNeighborsJob : IJob
     {
         [ReadOnly] public NativeArray<SpatialEntity> Entities;
         [ReadOnly] public NativeArray<HashAndIndex> HashAndIndices;
-        [ReadOnly] public float CellSize;
-        [ReadOnly] public float QueryRadius;
+        public NativeList<int> NeighborIndices;
+        public float3 QueryPosition;
+        public float QueryRadius;
+        public float CellSize;
 
-        public NativeParallelMultiHashMap<int, int>.ParallelWriter NeighborMap;
-
-        public void Execute(int index)
+        public void Execute()
         {
-            SpatialEntity currentEntity = Entities[index];
-            float3 queryPosition = currentEntity.Position;
+            NeighborIndices.Clear();
             float radiusSquared = QueryRadius * QueryRadius;
 
-            int3 minGridPos = SpatialHashMapHelper.GetGridPosition(queryPosition - QueryRadius, CellSize);
-            int3 maxGridPos = SpatialHashMapHelper.GetGridPosition(queryPosition + QueryRadius, CellSize);
+            int3 minGridPos = SpatialHashMapHelper.GetGridPosition(QueryPosition - QueryRadius, CellSize);
+            int3 maxGridPos = SpatialHashMapHelper.GetGridPosition(QueryPosition + QueryRadius, CellSize);
 
             for (int x = minGridPos.x; x <= maxGridPos.x; x++)
             {
@@ -37,17 +36,12 @@ namespace SpatialHashmap
 
                         for (int i = startIndex; i < HashAndIndices.Length && HashAndIndices[i].Hash == hash; i++)
                         {
-                            int neighborIndex = HashAndIndices[i].Index;
+                            int entityIndex = HashAndIndices[i].Index;
+                            float3 entityPosition = Entities[entityIndex].Position;
 
-                            // Skip self
-                            if (neighborIndex == index) continue;
-
-                            float3 neighborPosition = Entities[neighborIndex].Position;
-
-                            if (math.distancesq(neighborPosition, queryPosition) <= radiusSquared)
+                            if (math.distancesq(entityPosition, QueryPosition) <= radiusSquared)
                             {
-                                // Add neighbor to the NeighborMap
-                                NeighborMap.Add(index, neighborIndex);
+                                NeighborIndices.Add(entityIndex);
                             }
                         }
                     }
@@ -58,26 +52,15 @@ namespace SpatialHashmap
         private int BinarySearchFirst(NativeArray<HashAndIndex> array, int hash)
         {
             int left = 0, right = array.Length - 1;
-            int result = -1;
             while (left <= right)
             {
                 int mid = (left + right) / 2;
-                if (array[mid].Hash == hash)
-                {
-                    result = mid;
-                    right = mid - 1; // Keep searching to the left for the first occurrence
-                }
-                else if (array[mid].Hash < hash)
-                {
-                    left = mid + 1;
-                }
-                else
-                {
-                    right = mid - 1;
-                }
+                if (array[mid].Hash == hash) return mid;
+                if (array[mid].Hash < hash) left = mid + 1;
+                else right = mid - 1;
             }
-
-            return result;
+            
+            return -1;
         }
     }
 }

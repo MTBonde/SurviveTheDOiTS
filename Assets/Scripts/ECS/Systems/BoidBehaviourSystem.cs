@@ -7,6 +7,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace ECS.Systems
 {
@@ -62,15 +63,11 @@ namespace ECS.Systems
             // Allocate the arrays
             var entities = boidQuery.ToEntityArray(Allocator.TempJob);
             var positions = boidQuery.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
-            
-            int maxNeighborsPerBoid = (int)boidSettings.NeighborRadius * 10;
-            int maxBoidCount = 10000;
-            int initialCapacity = maxBoidCount * maxNeighborsPerBoid;
 
             // Allocate arrays for spatial data
             using (var spatialEntities = new NativeArray<SpatialEntity>(boidCount, Allocator.TempJob))
             using (var hashAndIndices = new NativeArray<HashAndIndex>(boidCount, Allocator.TempJob))
-            using (var neighborMap = new NativeParallelMultiHashMap<int, int>(initialCapacity, Allocator.TempJob))
+            using (var neighborIndices = new NativeList<int>(Allocator.TempJob))
             {
                 // Create the job
                 var collectSpatialEntitiesJob = new CollectSpatialEntitiesJob
@@ -87,7 +84,7 @@ namespace ECS.Systems
                 // Dispose of the arrays
                 entities.Dispose();
                 positions.Dispose();
-
+                
                 // Hash spatial entities
                 var hashBoidsJob = new HashEntitiesJob
                 {
@@ -109,11 +106,11 @@ namespace ECS.Systems
                 {
                     Entities = spatialEntities,
                     HashAndIndices = hashAndIndices,
-                    NeighborMap = neighborMap.AsParallelWriter(),
+                    NeighborIndices = neighborIndices,
                     QueryRadius = boidSettings.NeighborRadius,
                     CellSize = boidSettings.NeighborRadius
                 };
-                JobHandle queryNeighboringBoidsJobHandle = queryNeighboringBoidsJob.Schedule(spatialEntities.Length, 64, sortJobHandle);
+                JobHandle queryNeighboringBoidsJobHandle = queryNeighboringBoidsJob.Schedule(sortJobHandle);
                 queryNeighboringBoidsJobHandle.Complete();
 
                 // Perform boid behavior using neighbor data
@@ -122,7 +119,7 @@ namespace ECS.Systems
                     DeltaTime = deltaTime,
                     BoidSettings = boidSettings,
                     SpatialEntities = spatialEntities,
-                    NeighborMap = neighborMap,
+                    NeighborIndices = neighborIndices.AsArray(),
                     LocalTransformLookup = state.GetComponentLookup<LocalTransform>(false),
                     VelocityLookup = state.GetComponentLookup<VelocityComponent>(false),
                 };
@@ -164,7 +161,7 @@ namespace ECS.Systems
             public BoidSettings BoidSettings;
 
             [ReadOnly] public NativeArray<SpatialEntity> SpatialEntities;
-            [ReadOnly] public NativeParallelMultiHashMap<int, int> NeighborMap;
+            [ReadOnly] public NativeArray<int> NeighborIndices;
 
             [NativeDisableParallelForRestriction]
             public ComponentLookup<LocalTransform> LocalTransformLookup;
@@ -183,30 +180,25 @@ namespace ECS.Systems
                 float3 separation = float3.zero;
                 int neighborCount = 0;
 
-                // Get the neighbors for the current boid
-                NativeParallelMultiHashMapIterator<int> iterator;
-                int neighborIndex;
-                if (NeighborMap.TryGetFirstValue(index, out neighborIndex, out iterator))
+                // Loop over neighbors only
+                for (int i = 0; i < NeighborIndices.Length; i++)
                 {
-                    do
+                    int neighborIndex = NeighborIndices[i];
+                    if (neighborIndex == index) continue;
+
+                    SpatialEntity neighborBoid = SpatialEntities[neighborIndex];
+                    float3 neighborPosition = neighborBoid.Position;
+                    float3 neighborVelocity = VelocityLookup[neighborBoid.Entity].Velocity;
+
+                    float distance = math.distance(currentPosition, neighborPosition);
+
+                    if (distance > 0 && distance < BoidSettings.NeighborRadius)
                     {
-                        if (neighborIndex == index) continue;
-
-                        SpatialEntity neighborBoid = SpatialEntities[neighborIndex];
-                        float3 neighborPosition = neighborBoid.Position;
-                        float3 neighborVelocity = VelocityLookup[neighborBoid.Entity].Velocity;
-
-                        float distance = math.distance(currentPosition, neighborPosition);
-
-                        if (distance > 0 && distance < BoidSettings.NeighborRadius)
-                        {
-                            alignment += neighborVelocity;
-                            cohesion += neighborPosition;
-                            separation += (currentPosition - neighborPosition) / distance;
-                            neighborCount++;
-                        }
-
-                    } while (NeighborMap.TryGetNextValue(out neighborIndex, ref iterator));
+                        alignment += neighborVelocity;
+                        cohesion += neighborPosition;
+                        separation += (currentPosition - neighborPosition) / distance;
+                        neighborCount++;
+                    }
                 }
 
                 // Calculate average alignment, cohesion, and separation
@@ -250,47 +242,6 @@ namespace ECS.Systems
                     // Apply steering to bring the boid back inside the sphere
                     currentVelocity += steer * DeltaTime;
                 }
-
-
-                // // Boundary checking
-                // // (naive approach, not optimized, properly change to sphere boundary, or do an enum to change between shapes)
-                // float3 minBounds = BoidSettings.BoundaryCenter - BoidSettings.BoundarySize;
-                // float3 maxBounds = BoidSettings.BoundaryCenter + BoidSettings.BoundarySize;
-                //
-                // float3 steer = float3.zero;
-                //
-                // if (currentPosition.x < minBounds.x)
-                // {
-                //     steer.x = BoidSettings.BoundaryWeight;
-                // }
-                // else if (currentPosition.x > maxBounds.x)
-                // {
-                //     steer.x = -BoidSettings.BoundaryWeight;
-                // }
-                //
-                // if (currentPosition.y < minBounds.y)
-                // {
-                //     steer.y = BoidSettings.BoundaryWeight;
-                // }
-                // else if (currentPosition.y > maxBounds.y)
-                // {
-                //     steer.y = -BoidSettings.BoundaryWeight;
-                // }
-                //
-                // if (currentPosition.z < minBounds.z)
-                // {
-                //     steer.z = BoidSettings.BoundaryWeight;
-                // }
-                // else if (currentPosition.z > maxBounds.z)
-                // {
-                //     steer.z = -BoidSettings.BoundaryWeight;
-                // }
-                //
-                // if (!math.all(steer == float3.zero))
-                // {
-                //     // Apply steering to bring boid back inside the boundary
-                //     currentVelocity += math.normalize(steer) * BoidSettings.BoundaryWeight * DeltaTime;
-                // }
 
                 // Update components
                 SpatialEntity spatialEntity = SpatialEntities[index];
