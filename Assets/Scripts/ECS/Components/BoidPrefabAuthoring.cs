@@ -33,8 +33,12 @@ namespace ECS.Components
                 // entity as one that will undergo regular updates, allocating resources accordingly.
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-                // Set random initial velocity instead of speed and direction
-                AddComponent(entity, new VelocityComponent { Velocity = prefabAuthoring.Direction * prefabAuthoring.Speed });
+                // Adds MoveSpeedComponent to the entity with the speed value from BoidAuthoring.
+                AddComponent(entity, new MoveSpeedComponent { Speed = prefabAuthoring.Speed });
+                
+                // Adds DirectionComponent to the entity with the direction value from BoidAuthoring.
+                AddComponent(entity, new DirectionComponent { Direction = prefabAuthoring.Direction });
+                
                 AddComponent(entity, new BoidBehaviourComponent {});
                 AddComponent(entity, new BoidTag {});
                 AddComponent(entity, new BoidAttackComponent
@@ -43,15 +47,6 @@ namespace ECS.Components
                 });
                 
                 SetComponentEnabled<BoidAttackComponent>(entity, false);
-                
-                // // Adds MoveSpeedComponent to the entity with the speed value from BoidAuthoring.
-                // AddComponent(entity, new MoveSpeedComponent { Speed = prefabAuthoring.Speed });
-                //
-                // // Adds DirectionComponent to the entity with the direction value from BoidAuthoring.
-                // AddComponent(entity, new DirectionComponent { Direction = prefabAuthoring.Direction });
-                //
-                // // Adds BoidComponent to the entity.
-                // AddComponent(entity, new BoidBehaviourComponent{});
             }
         }
     }

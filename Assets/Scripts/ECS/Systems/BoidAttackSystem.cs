@@ -1,9 +1,9 @@
 using ECS.Authoring;
 using ECS.Components;
-using Unity.Entities;
-using Unity.Transforms;
-using Unity.Mathematics;
 using Unity.Burst;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 namespace ECS.Systems
 {
@@ -12,7 +12,6 @@ namespace ECS.Systems
     {
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<BoidSettings>();
             state.RequireForUpdate<FirstPersonPlayer>();
         }
@@ -20,19 +19,15 @@ namespace ECS.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            EntityCommandBuffer entityCommandBuffer = SystemAPI
-                .GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
-                .CreateCommandBuffer(state.WorldUnmanaged);
-            
-            // Get the first person player entity
+            // Get the player entity and its position
             var firstPersonPlayer = SystemAPI.GetSingleton<FirstPersonPlayer>();
             var playerTransform = SystemAPI.GetComponent<LocalTransform>(firstPersonPlayer.ControlledCharacter);
             float3 playerPosition = playerTransform.Position;
 
             // Get BoidSettings singleton
             BoidSettings boidSettings = SystemAPI.GetSingleton<BoidSettings>();
-            
-            // Reset distance for reverting to boid mode
+
+            // Constants for attack logic
             float resetDistance = 10f;
             float groundOffset = boidSettings.GroundOffset;
             float attackSpeed = boidSettings.MoveSpeed * 2f;
@@ -40,51 +35,39 @@ namespace ECS.Systems
             // Query attacking boids
             foreach ((
                          RefRW<LocalTransform> localTransform, 
-                         RefRW<VelocityComponent> velocityComponent, 
                          RefRW<BoidAttackComponent> boidAttackComponent,
-                         Entity entity
+                         RefRW<DirectionComponent> directionComponent,
+                         RefRW<MoveSpeedComponent> moveSpeedComponent
                      ) in SystemAPI.Query<
                          RefRW<LocalTransform>, 
-                         RefRW<VelocityComponent>, 
-                         RefRW<BoidAttackComponent>
-                     >().WithEntityAccess())
+                         RefRW<BoidAttackComponent>, 
+                         RefRW<DirectionComponent>, 
+                         RefRW<MoveSpeedComponent>>())
             {
-                // Get boid's current position and velocity
                 float3 boidPosition = localTransform.ValueRO.Position;
-                float3 currentVelocity = velocityComponent.ValueRO.Velocity;
 
-                // Calculate ground target directly below the boid
-       
+                // Calculate ground target below the boid
                 float3 groundTarget = new float3(boidPosition.x, groundOffset, boidPosition.z);
 
-                // Calculate direction to ground
+                // Calculate directions for curve calculation
                 float3 directionToGround = math.normalize(groundTarget - boidPosition);
-
-                // Calculate direction to player
                 float3 directionToPlayer = math.normalize(playerPosition - boidPosition);
 
-                // Calculate blend factor for curved movement
+                // Calculate the curved direction
                 float distanceToGround = math.distance(boidPosition, groundTarget);
-                float groundInfluence = math.clamp(distanceToGround / 5f, 0f, 1f); // Blend ground influence based on proximity
+                float groundInfluence = math.clamp(distanceToGround / 5f, 0f, 1f); // Influence of ground proximity
                 float3 curvedDirection = math.lerp(directionToGround, directionToPlayer, 1f - groundInfluence);
 
-                // Smooth velocity transition for natural movement
-                float3 smoothedVelocity = math.lerp(currentVelocity, curvedDirection * attackSpeed, 0.2f);
+                // Update the direction and speed components
+                directionComponent.ValueRW.Direction = curvedDirection;
+                moveSpeedComponent.ValueRW.Speed = attackSpeed;
 
-                // Update boid's position and velocity
-                velocityComponent.ValueRW.Velocity = smoothedVelocity;
-                localTransform.ValueRW.Position += smoothedVelocity * SystemAPI.Time.DeltaTime;
-
-                // Check if boid should reset (player is too far)
+                // Check if the boid should reset to normal mode
                 if (math.distance(boidPosition, playerPosition) > resetDistance && distanceToGround < 0.5f)
                 {
-                    boidAttackComponent.ValueRW.IsAttacking = false; // Reset to boid mode
-                    entityCommandBuffer.SetComponentEnabled<BoidAttackComponent>(entity, false);
+                    boidAttackComponent.ValueRW.IsAttacking = false; // Reset attack mode
                     return;
                 }
-
-                // Update rotation to face movement direction
-                localTransform.ValueRW.Rotation = quaternion.LookRotationSafe(smoothedVelocity, math.up());
             }
         }
     }

@@ -12,49 +12,71 @@ namespace ECS.Authoring
     [DisallowMultipleComponent]
     public class BoidSettingsAuthoring : MonoBehaviour
     {
-        public float NeighborRadius = 25f;
-        public float MoveSpeed = 25f;
-        public float AlignmentWeight = 10f;
-        public float CohesionWeight = 5f;
-        public float SeparationWeight = 0.5f;
-        public float AttackRange = 40f;
-        public float GroundOffset = 1.5f;
-        
+        // Neighbor settings
+        [Header("Neighbor Settings")]
+        public float NeighborRadius = 5f;
+        public int MaxNeighbors = 10;
+        public int SpatialCellSize = 10;
+
+        // Boid behavior settings
+        [Header("Boid Behavior Settings")]
+        public float MoveSpeed = 5f;
+        public float AlignmentWeight = 1f;
+        public float CohesionWeight = 1f;
+        public float SeparationWeight = 1f;
+
         // Boundary settings
+        [Header("Boundary Settings")] 
+        public BoundaryType BoundaryType = BoundaryType.Sphere;
         public GameObject BoundaryCenter;
-        public float BoundarySize = 25f; // Half the size of the area
-        public float BoundaryWeight = 50f; // Steering force when outside boundary
+        public float BoundarySize = 50f; 
+        public float BoundaryWeight = 10f;
 
-        private Entity boidSettingsEntity;
-        private EntityManager entityManager;
-        
+        public int AttackRange;
+        public float GroundOffset;
 
-        void Awake()
+        private Entity _boidSettingsEntity;
+        private EntityManager _entityManager;
+
+        private void Awake()
         {
             // Get the EntityManager and singleton entity
-            entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-            boidSettingsEntity = entityManager.CreateEntityQuery(typeof(BoidSettings)).GetSingletonEntity();
+            _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            _boidSettingsEntity = _entityManager.CreateEntityQuery(typeof(BoidSettings)).GetSingletonEntity();
         }
 
-        void OnValidate()
+        private void OnValidate()
         {
             if (!Application.isPlaying)
                 return;
 
-            if (boidSettingsEntity != Entity.Null)
+            if (_boidSettingsEntity != Entity.Null)
             {
-                BoidSettings boidSettings = entityManager.GetComponentData<BoidSettings>(boidSettingsEntity);
+                // Get the BoidSettings component from the singleton entity
+                BoidSettings boidSettings = _entityManager.GetComponentData<BoidSettings>(_boidSettingsEntity);
+                
+                // Neighbor settings
                 boidSettings.NeighborRadius = NeighborRadius;
+                boidSettings.MaxNeighbors = MaxNeighbors;
+                boidSettings.SpatialCellSize = SpatialCellSize;
+                
+                // Boid behavior settings
                 boidSettings.MoveSpeed = MoveSpeed;
                 boidSettings.AlignmentWeight = AlignmentWeight;
                 boidSettings.CohesionWeight = CohesionWeight;
                 boidSettings.SeparationWeight = SeparationWeight;
+                
+                // Boundary settings
+                boidSettings.BoundaryType = BoundaryType;
                 boidSettings.BoundaryCenter = BoundaryCenter.transform.position;
-                boidSettings.AttackRange = AttackRange;
-                boidSettings.GroundOffset = GroundOffset;
                 boidSettings.BoundarySize = BoundarySize;
                 boidSettings.BoundaryWeight = BoundaryWeight;
-                entityManager.SetComponentData(boidSettingsEntity, boidSettings);
+                
+                boidSettings.AttackRange = AttackRange;
+                boidSettings.GroundOffset = GroundOffset;
+                
+                // Update the singleton entity
+                _entityManager.SetComponentData(_boidSettingsEntity, boidSettings);
             }
         }
 
@@ -65,16 +87,25 @@ namespace ECS.Authoring
                 Entity entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new BoidSettings
                 {
+                    // Neighbor settings
                     NeighborRadius = authoring.NeighborRadius,
+                    MaxNeighbors = authoring.MaxNeighbors,
+                    SpatialCellSize = authoring.SpatialCellSize,
+                    
+                    // Boid behavior settings
                     MoveSpeed = authoring.MoveSpeed,
                     AlignmentWeight = authoring.AlignmentWeight,
                     CohesionWeight = authoring.CohesionWeight,
                     SeparationWeight = authoring.SeparationWeight,
-                    AttackRange = authoring.AttackRange,
-                    GroundOffset = authoring.GroundOffset,
+                    
+                    // Boundary settings
+                    BoundaryType = authoring.BoundaryType,
                     BoundaryCenter = authoring.BoundaryCenter.transform.position,
                     BoundarySize = authoring.BoundarySize,
                     BoundaryWeight = authoring.BoundaryWeight,
+                    
+                    AttackRange = authoring.AttackRange,
+                    GroundOffset = authoring.GroundOffset
                 });
             }
         }
@@ -85,17 +116,31 @@ namespace ECS.Authoring
     /// </summary>
     public struct BoidSettings : IComponentData
     {
+        // neighbor settings
         public float NeighborRadius;
+        public int MaxNeighbors;
+        public int SpatialCellSize;
+        
+        // boid behavior settings
         public float MoveSpeed;
         public float AlignmentWeight;
         public float CohesionWeight;
         public float SeparationWeight;
-        public float AttackRange;
-        public float GroundOffset;
         
         // Boundary parameters
+        public BoundaryType BoundaryType;
         public float3 BoundaryCenter;
-        public float BoundarySize; // Half the size of the cube (extent)
-        public float BoundaryWeight; // How strongly boids steer back when outside
+        public float BoundarySize; 
+        public float BoundaryWeight;
+        
+        public int AttackRange;
+        public float GroundOffset;
+    }
+    
+    public enum BoundaryType
+    {
+        Sphere,
+        Box,
+        Donut
     }
 }

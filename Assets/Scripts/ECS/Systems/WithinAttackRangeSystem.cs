@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Burst;
+using UnityEngine;
 
 namespace ECS.Systems
 {
@@ -57,6 +58,7 @@ namespace ECS.Systems
                     // Coin flip: 50% chance to switch to attacking
                     if (random.NextFloat() < 0.5f)
                     {
+                        // Debug.Log("Boid is attacking!");
                         // RefRW<MoveSpeedComponent> moveSpeedComponent = SystemAPI.GetComponentRW<MoveSpeedComponent>(entity);
                         // moveSpeedComponent.ValueRW.Speed = speed * 2;
                         

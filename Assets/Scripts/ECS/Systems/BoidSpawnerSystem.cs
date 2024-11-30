@@ -7,12 +7,19 @@ using Unity.Transforms;
 
 namespace ECS.Systems
 {
+    /// <summary>
+    /// System responsible for spawning boids based on wave data and spawner settings.
+    /// </summary>
     [UpdateAfter(typeof(WaveManagerSystem))]
     public partial struct BoidSpawnerSystem : ISystem
     {
         private EntityQuery _boidQuery;
-        private float timeSinceLastSpawn;
+        private float _timeSinceLastSpawn;
 
+        /// <summary>
+        /// Initializes required queries and state for the system.
+        /// </summary>
+        /// <param name="state">System state.</param>
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<BoidSettings>();
@@ -21,60 +28,84 @@ namespace ECS.Systems
             state.RequireForUpdate<BoidSpawner>();
 
             _boidQuery = state.GetEntityQuery(ComponentType.ReadOnly<BoidTag>());
-            timeSinceLastSpawn = 0f;
+            _timeSinceLastSpawn = 0f;
         }
 
+        /// <summary>
+        /// Executes boid spawning logic during each frame update.
+        /// </summary>
+        /// <param name="state">System state.</param>
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var waveData = SystemAPI.GetSingletonRW<WaveData>();
-            var boidSpawner = SystemAPI.GetSingleton<BoidSpawner>();
-            var boidSettings = SystemAPI.GetSingleton<BoidSettings>();
-            var entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+            // Retrieve singleton data
+            EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+            BoidSettings boidSettings = SystemAPI.GetSingleton<BoidSettings>();
+            RefRW<WaveData> waveData = SystemAPI.GetSingletonRW<WaveData>();
 
             // Update spawn timer
-            timeSinceLastSpawn += SystemAPI.Time.DeltaTime;
+            _timeSinceLastSpawn += SystemAPI.Time.DeltaTime;
 
-            // Define spawn interval (adjust as needed)
-            float spawnInterval = 4.0f; // Spawn every 4 seconds
+            // Spawn interval in seconds
+            const float spawnInterval = 4.0f;
 
-            // Check if it's time to spawn
-            if (timeSinceLastSpawn < spawnInterval) return;
+            // Check spawn timing
+            if (_timeSinceLastSpawn < spawnInterval) return;
 
-            timeSinceLastSpawn = 0f; // Reset the timer
+            _timeSinceLastSpawn = 0f; // Reset timer
 
-            // Current boid count
+            // Current number of boids
             int currentBoidCount = _boidQuery.CalculateEntityCount();
 
-            // Max allowed boids for this wave
+            // Determine wave limits
             int maxAllowedThisWave = waveData.ValueRO.MaxAllowedThisWave;
 
-            // Max overall boid count
-            int maxBoidCount = boidSpawner.MaxBoidCount;
-
-            // Calculate how many boids to spawn in this batch
-            int boidsToSpawn = math.min(maxAllowedThisWave - currentBoidCount, maxBoidCount - currentBoidCount);
-
-            if (boidsToSpawn <= 0) return; // Nothing to spawn if limits are reached
-
-            // Spawn boids
+            // Random generator for position offsets
             Random random = new Random((uint)UnityEngine.Random.Range(1, int.MaxValue));
-            for (int i = 0; i < boidsToSpawn; i++)
+
+            // Spawn boids for each spawner
+            foreach (
+                RefRO<BoidSpawner> boidSpawner 
+                in SystemAPI.Query<
+                    RefRO<BoidSpawner>
+                >())
             {
-                if (currentBoidCount >= maxBoidCount || currentBoidCount >= maxAllowedThisWave) break;
+                int maxBoidCount = boidSpawner.ValueRO.MaxBoidCount;
 
-                Entity boidEntity = state.EntityManager.Instantiate(entitiesReferences.BoidPrefabEntity);
-
-                float3 randomOffset = random.NextFloat3(-10f, 10f);
-                float3 boidSpawnPosition = boidSpawner.SpawnPosition + randomOffset;
-                state.EntityManager.SetComponentData(boidEntity, LocalTransform.FromPosition(boidSpawnPosition));
-
-                var direction = (boidSettings.BoundaryCenter - boidSpawnPosition) + randomOffset;
+                // Calculate boids to spawn for this spawner
+                int boidsToSpawn = math.min(maxAllowedThisWave - currentBoidCount, maxBoidCount - currentBoidCount);
                 
-                var targetVelocity = math.normalize(direction) * boidSettings.MoveSpeed;
-                state.EntityManager.SetComponentData(boidEntity, new VelocityComponent { Velocity = targetVelocity });
+                // Skip if no boids can be spawned
+                if (boidsToSpawn <= 0) continue; 
 
-                currentBoidCount++;
+                // Exit early if limits are reached
+                if (currentBoidCount >= maxAllowedThisWave) return;
+                
+                for (int i = 0; i < boidsToSpawn; i++)
+                {
+                    // Spawn boid entity
+                    Entity boidEntity = state.EntityManager.Instantiate(entitiesReferences.BoidPrefabEntity);
+
+                    // Calculate random spawn position relative to the spawner
+                    float3 positionOffset = random.NextFloat3(-10f, 10f);
+                    float3 spawnPosition = boidSpawner.ValueRO.SpawnPosition + positionOffset;
+                    state.EntityManager.SetComponentData(boidEntity, LocalTransform.FromPosition(spawnPosition));
+
+                    // Generate random target position within boundary
+                    float3 targetOffset = random.NextFloat3(-10f, 10f);
+                    float3 targetPosition = boidSettings.BoundaryCenter + targetOffset;
+
+                    // Calculate direction from spawn to target
+                    float3 direction = math.normalize(targetPosition - spawnPosition);
+                    state.EntityManager.SetComponentData(boidEntity, new DirectionComponent { Direction = direction });
+
+                    // Assign random movement speed
+                    float speed = random.NextFloat(1f, 3f);
+                    state.EntityManager.SetComponentData(boidEntity, new MoveSpeedComponent { Speed = speed });
+
+                    // Update the current boid count
+                    currentBoidCount++;
+                }
             }
         }
     }
