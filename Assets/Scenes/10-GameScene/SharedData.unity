@@ -1313,7 +1313,7 @@ MonoBehaviour:
   BoundaryCenter: {fileID: 2138355733}
   BoundarySize: 80
   BoundaryWeight: 10
-  AttackRange: 60
+  AttackRange: 40
   GroundOffset: 2
 --- !u!114 &1978585782
 MonoBehaviour:
