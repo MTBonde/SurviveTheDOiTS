@@ -1306,15 +1306,15 @@ MonoBehaviour:
   MaxNeighbors: 10
   SpatialCellSize: 10
   MoveSpeed: 10
-  AlignmentWeight: 1
+  AlignmentWeight: 0.5
   CohesionWeight: 1
   SeparationWeight: 2
   BoundaryType: 0
   BoundaryCenter: {fileID: 2138355733}
   BoundarySize: 80
   BoundaryWeight: 10
-  AttackRange: 40
-  GroundOffset: 2
+  AttackRange: 100
+  GroundOffset: 3
 --- !u!114 &1978585782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1327,7 +1327,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d38c05077a1ebe4a9d3299254c9f0f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxBoidCount: 2048
+  MaxBoidCount: 1024
   SpawnPosition: {fileID: 917237930}
 --- !u!4 &1978585783
 Transform:
