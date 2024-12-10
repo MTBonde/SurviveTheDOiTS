@@ -77,18 +77,18 @@ public class GameInitiator : MonoBehaviour
         Debug.Log("Creating essential entities and loading subscenes...");
     
         
-        var playerSubscene = FindObjectOfType<SubScene>();
-        if (playerSubscene == null)
-        {
-            Debug.LogError("Player subscene not found!");
-            return;
-        }
-
-        // Load the subscene asynchronously and wait until it's fully loaded.
-        while (!playerSubscene.IsLoaded)
-        {
-            await Task.Delay(100); // Check every 100ms if subscene has loaded
-        }
+        // var playerSubscene = FindObjectOfType<SubScene>();
+        // if (playerSubscene == null)
+        // {
+        //     Debug.LogError("Player subscene not found!");
+        //     return;
+        // }
+        //
+        // // Load the subscene asynchronously and wait until it's fully loaded.
+        // while (!playerSubscene.IsLoaded)
+        // {
+        //     await Task.Delay(100); // Check every 100ms if subscene has loaded
+        // }
 
         // After the subscene is loaded, retrieve the player entity.
         var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
