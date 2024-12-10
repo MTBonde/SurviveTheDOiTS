@@ -1304,10 +1304,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NeighborRadius: 20
   MoveSpeed: 20
-  AlignmentWeight: 10
-  CohesionWeight: 5
-  SeparationWeight: 0.1
-  AttackRange: 40
+  AlignmentWeight: 1
+  CohesionWeight: 2
+  SeparationWeight: 3
+  AttackRange: 1
   GroundOffset: 1.5
   BoundaryCenter: {fileID: 2138355733}
   BoundarySize: 25
@@ -1324,7 +1324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d38c05077a1ebe4a9d3299254c9f0f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxBoidCount: 257
+  MaxBoidCount: 300
   SpawnPosition: {fileID: 917237930}
 --- !u!4 &1978585783
 Transform:
