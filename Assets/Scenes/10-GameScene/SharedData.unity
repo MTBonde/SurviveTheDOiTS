@@ -1305,7 +1305,7 @@ MonoBehaviour:
   NeighborRadius: 20
   MaxNeighbors: 10
   SpatialCellSize: 5
-  MoveSpeed: 10
+  MoveSpeed: 25
   AlignmentWeight: 0.5
   CohesionWeight: 2
   SeparationWeight: 3
@@ -1313,7 +1313,7 @@ MonoBehaviour:
   BoundaryCenter: {fileID: 2138355733}
   BoundarySize: 80
   BoundaryWeight: 2
-  AttackRange: 40
+  AttackRange: 50
   GroundOffset: 3
 --- !u!114 &1978585782
 MonoBehaviour:
