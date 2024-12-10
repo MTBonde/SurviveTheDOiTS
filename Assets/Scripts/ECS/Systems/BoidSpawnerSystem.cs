@@ -77,6 +77,9 @@ namespace ECS.Systems
                 
                 // Skip if no boids can be spawned
                 if (boidsToSpawn <= 0) continue; 
+                
+                // if boids to spawn is over 1024 limit to 1024
+                if (boidsToSpawn > 1024) boidsToSpawn = 1024;
 
                 // Exit early if limits are reached
                 if (currentBoidCount >= maxAllowedThisWave) return;

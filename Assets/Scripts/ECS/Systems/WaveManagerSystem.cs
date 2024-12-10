@@ -26,7 +26,7 @@ namespace ECS.Systems
                 timeSinceLastWave = 0f;
 
                 // Calculate the max allowed boids for this wave (2 * 2^(waveCount - 1))
-                int maxAllowedThisWave = 2 * (1 << waveCount);
+                int maxAllowedThisWave = 16 * (2 << waveCount);
 
                 // Update WaveData with the max allowed on-screen
                 waveData.ValueRW.MaxAllowedThisWave = maxAllowedThisWave;

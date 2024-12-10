@@ -1051,7 +1051,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 100, y: 1, z: 100}
+  m_LocalScale: {x: 1000, y: 2, z: 1000}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2067504566}
@@ -1306,14 +1306,14 @@ MonoBehaviour:
   MaxNeighbors: 20
   SpatialCellSize: 5
   MoveSpeed: 25
-  AlignmentWeight: 1
+  AlignmentWeight: 0.5
   CohesionWeight: 3
   SeparationWeight: 4
   BoundaryType: 0
   BoundaryCenter: {fileID: 2138355733}
   BoundarySize: 190
-  BoundaryWeight: 10
-  AttackRange: 10
+  BoundaryWeight: 2
+  AttackRange: 50
   GroundOffset: 3
 --- !u!114 &1978585782
 MonoBehaviour:
