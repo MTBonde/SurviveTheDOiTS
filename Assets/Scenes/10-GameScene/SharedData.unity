@@ -1313,7 +1313,7 @@ MonoBehaviour:
   BoundaryCenter: {fileID: 2138355733}
   BoundarySize: 80
   BoundaryWeight: 2
-  AttackRange: 100
+  AttackRange: 40
   GroundOffset: 3
 --- !u!114 &1978585782
 MonoBehaviour:
@@ -1327,7 +1327,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d38c05077a1ebe4a9d3299254c9f0f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxBoidCount: 2048
+  MaxBoidCount: 4096
   SpawnPosition: {fileID: 917237930}
 --- !u!4 &1978585783
 Transform:
