@@ -1303,17 +1303,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NeighborRadius: 20
-  MaxNeighbors: 10
+  MaxNeighbors: 20
   SpatialCellSize: 5
-  MoveSpeed: 10
-  AlignmentWeight: 0.5
-  CohesionWeight: 2
-  SeparationWeight: 3
+  MoveSpeed: 25
+  AlignmentWeight: 1
+  CohesionWeight: 3
+  SeparationWeight: 4
   BoundaryType: 0
   BoundaryCenter: {fileID: 2138355733}
-  BoundarySize: 80
-  BoundaryWeight: 2
-  AttackRange: 100
+  BoundarySize: 190
+  BoundaryWeight: 10
+  AttackRange: 10
   GroundOffset: 3
 --- !u!114 &1978585782
 MonoBehaviour:
@@ -1327,7 +1327,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d38c05077a1ebe4a9d3299254c9f0f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxBoidCount: 2048
+  MaxBoidCount: 10000
   SpawnPosition: {fileID: 917237930}
 --- !u!4 &1978585783
 Transform:
@@ -1538,7 +1538,7 @@ Transform:
   m_GameObject: {fileID: 2138355733}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 100, z: 100}
+  m_LocalPosition: {x: 0, y: 200, z: 200}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

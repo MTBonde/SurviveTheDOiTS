@@ -65,7 +65,6 @@ namespace ECS.Systems
             JobHandle buildHashMapHandle = buildHashMapJob.Schedule(boidCount, batchSize, collectHandle);
 
             // Step 3: Find Neighbors in the shared hashmap
-            
             NativeArray<NeighborData> neighborDataArray = new NativeArray<NeighborData>(boidCount, Allocator.TempJob);
             FindNeighborsJob findNeighborsJob = new FindNeighborsJob
             {
@@ -227,6 +226,7 @@ namespace ECS.Systems
                     }
                 }
 
+                // Store neighbor data
                 NeighborDataArray[index] = new NeighborData
                 {
                     Alignment = alignment,

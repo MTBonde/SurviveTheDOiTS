@@ -23,6 +23,10 @@ namespace Mono.UI
             var counterEntity = entityManager.CreateEntityQuery(typeof(KilledBoidsCounter)).GetSingletonEntity();
             var killedBoidsCounter = entityManager.GetComponentData<KilledBoidsCounter>(counterEntity);
             killedBoidsText.text = killedBoidsCounter.Value.ToString();
+            
+            // set text to red
+            killedBoidsText.color = Color.red;
+            currentBoidsText.color = Color.green;
         }
     }
 }
