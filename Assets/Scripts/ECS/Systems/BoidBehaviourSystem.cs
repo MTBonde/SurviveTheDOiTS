@@ -142,9 +142,20 @@ namespace ECS.Systems
                 SpatialHashMap.Add(hash, index);
             }
 
-            public static int3 GridPosition(float3 position, float cellSize) => 
+            /// <summary>
+            /// Calculates the grid position of a given 3D vector based on a specified cell size.
+            /// </summary>
+            /// <param name="position">The 3D position vector to be converted into a grid position.</param>
+            /// <param name="cellSize">The size of each grid cell, used to scale the position into grid space.</param>
+            /// <returns>An int3 representing the discrete grid position corresponding to the input position.</returns>
+            public static int3 GridPosition(float3 position, float cellSize) =>
                 new(math.floor(position / cellSize));
 
+            /// <summary>
+            /// Computes a hash value for a given grid position using a deterministic hashing algorithm.
+            /// </summary>
+            /// <param name="gridPos">The integer grid position represented as an int3 structure.</param>
+            /// <returns>An integer hash value uniquely representing the input grid position.</returns>
             public static int Hash(int3 gridPos) =>
                 (gridPos.x * 73856093) ^ (gridPos.y * 19349669) ^ (gridPos.z * 83492791);
         }

@@ -61,6 +61,12 @@ namespace ECS.Systems
                     // Access the rigid body of the hit
                     var rigidBody = physicsWorld.PhysicsWorld.Bodies[hit.RigidBodyIndex];
                     var hitFilter = rigidBody.Collider.Value.GetCollisionFilter(hit.ColliderKey);
+                    
+                    //if hit belongs to default layer, ignore
+                    if ((hitFilter.BelongsTo & (uint)CollisionLayer.Default) != 0)
+                    {
+                        continue;
+                    }
 
                     // Check if the hit entity belongs to the GameWorld layer
                     if ((hitFilter.BelongsTo & (uint)CollisionLayer.GameWorld) != 0)

@@ -1308,12 +1308,12 @@ MonoBehaviour:
   MoveSpeed: 25
   AlignmentWeight: 0.5
   CohesionWeight: 2
-  SeparationWeight: 3
+  SeparationWeight: 2.5
   BoundaryType: 0
   BoundaryCenter: {fileID: 2138355733}
   BoundarySize: 80
   BoundaryWeight: 2
-  AttackRange: 50
+  AttackRange: 60
   GroundOffset: 3
 --- !u!114 &1978585782
 MonoBehaviour:
@@ -1327,7 +1327,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d38c05077a1ebe4a9d3299254c9f0f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxBoidCount: 4096
+  MaxBoidCount: 2048
   SpawnPosition: {fileID: 917237930}
 --- !u!4 &1978585783
 Transform:
@@ -1379,7 +1379,7 @@ GameObject:
   - component: {fileID: 2032626124}
   - component: {fileID: 2032626123}
   - component: {fileID: 2032626122}
-  m_Layer: 8
+  m_Layer: 3
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
