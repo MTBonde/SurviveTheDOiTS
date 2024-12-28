@@ -113,7 +113,7 @@ namespace ECS.Systems
                 if (distanceToPlayer <= 2.0f)
                 {
                     Debug.Log("Player is hit by boid!");
-                    ecb.DestroyEntity(boidEntity);
+                    //ecb.DestroyEntity(boidEntity);
                 }
             }
 
